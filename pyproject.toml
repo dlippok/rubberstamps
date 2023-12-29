@@ -1,0 +1,15 @@
+[build-system]
+requires      = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rubberstamps"
+version = "0.1.0"
+authors = [
+    { name = "Damian Lippok", email = "mail.dalee@gmail.com" },
+]
+description = "A bunch of readily available shapes for Cairo graphics library."
+requires-python = ">=3.12"
+dependencies = [
+    "pycairo"
+]
