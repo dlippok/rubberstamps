@@ -1,18 +1,26 @@
 from math import sin, pi, cos, sqrt
+from typing import List
 
 from cairo import Context
 
 
 class Grid:
-    def __init__(self, color_rgba=(0.5, 0.5, 0.5, 0.5), line_width: float = 1, spacing: float = 20):
+    def __init__(self,
+                 color_rgba=(0.5, 0.5, 0.5, 0.5),
+                 line_width: float = 1,
+                 dash: List[float] | None = None,
+                 spacing: float = 20):
         self.color_rgba = color_rgba
         self.line_width = line_width
+        self.dash = dash or []
         self.spacing = spacing
 
     def draw(self, c: Context, x: float, y: float, width: float, height: float):
         c.save()
         c.set_source_rgba(*self.color_rgba)
         c.set_line_width(self.line_width)
+        c.set_dash(self.dash)
+
         cur_x = x
         while cur_x < x + width:
             c.move_to(cur_x, y)
@@ -30,15 +38,22 @@ class Grid:
 
 
 class Lines:
-    def __init__(self, color_rgba=(0.5, 0.5, 0.5, 0.5), line_width: float = 1, spacing: float = 20):
+    def __init__(self,
+                 color_rgba=(0.5, 0.5, 0.5, 0.5),
+                 line_width: float = 1,
+                 dash: List[float] | None = None,
+                 spacing: float = 20):
         self.color_rgba = color_rgba
         self.line_width = line_width
+        self.dash = dash or []
         self.spacing = spacing
 
     def draw(self, c: Context, x: float, y: float, width: float, height: float):
         c.save()
         c.set_source_rgba(*self.color_rgba)
         c.set_line_width(self.line_width)
+        c.set_dash(self.dash)
+
         cur_y = y
         while cur_y < y + height:
             c.move_to(x, cur_y)
@@ -49,15 +64,21 @@ class Lines:
 
 
 class HexagonalGrid:
-    def __init__(self, color_rgba=(0.5, 0.5, 0.5, 0.5), line_width=1, radius=100):
+    def __init__(self,
+                 color_rgba=(0.5, 0.5, 0.5, 0.5),
+                 line_width=1,
+                 dash: List[float] | None = None,
+                 radius=100):
         self.color_rgba = color_rgba
         self.line_width = line_width
+        self.dash = dash or []
         self.radius = radius
 
     def draw(self, c: Context, x: float, y: float, width: float, height: float):
         c.save()
         c.set_source_rgba(*self.color_rgba)
         c.set_line_width(self.line_width)
+        c.set_dash(self.dash)
 
         line_length = (cos(pi*1/3) * (self.radius / 2)) - (cos(pi * 2 / 3) * (self.radius / 2))
         horizontal_spacing = self.radius + line_length
@@ -87,14 +108,20 @@ class HexagonalGrid:
 
 
 class CartesianCoordinates:
-    def __init__(self, color_rgba=(0.5, 0.5, 0.5, 0.5), line_width: float = 1):
+    def __init__(self,
+                 color_rgba=(0.5, 0.5, 0.5, 0.5),
+                 line_width: float = 1,
+                 dash: List[float] | None = None):
         self.color_rgba = color_rgba
         self.line_width = line_width
+        self.dash = dash or []
 
     def draw(self, c: Context, x: float, y: float, width: float, height: float):
         c.save()
         c.set_source_rgba(*self.color_rgba)
         c.set_line_width(self.line_width)
+        c.set_dash(self.dash)
+
         c.move_to(x, height/2 + y)
         c.line_to(width + x, height/2 + y)
 
@@ -109,9 +136,18 @@ class PolarCoordinates:
                  color_rgba=(0.5, 0.5, 0.5, 0.5),
                  line_width: float = 1,
                  spacing: float = 20,
+                 dash: List[float] | None = None,
                  overflow: bool = False):
-        self.cartesian = CartesianCoordinates(color_rgba=color_rgba, line_width=line_width)
-        self.bullseye = Bullseye(color_rgba=color_rgba, line_width=line_width, spacing=spacing, overflow=overflow)
+        self.cartesian = CartesianCoordinates(
+            color_rgba=color_rgba,
+            line_width=line_width,
+            dash=dash)
+        self.bullseye = Bullseye(
+            color_rgba=color_rgba,
+            line_width=line_width,
+            dash=dash,
+            spacing=spacing,
+            overflow=overflow)
 
     def draw(self, c: Context, x: float, y: float, width: float, height: float):
         self.cartesian.draw(c, x, y, width, height)
@@ -122,10 +158,12 @@ class Bullseye:
     def __init__(self,
                  color_rgba=(0.5, 0.5, 0.5, 0.5),
                  line_width: float = 1,
+                 dash: List[float] | None = None,
                  spacing: float = 20,
                  overflow: bool = False):
         self.color_rgba = color_rgba
         self.line_width = line_width
+        self.dash = dash or []
         self.spacing = spacing
         self.overflow = overflow
 
@@ -140,6 +178,7 @@ class Bullseye:
 
         c.set_source_rgba(*self.color_rgba)
         c.set_line_width(self.line_width)
+        c.set_dash(self.dash)
 
         radius = self.spacing
         while radius <= max_radius:
