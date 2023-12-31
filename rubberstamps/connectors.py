@@ -40,6 +40,35 @@ class BaseConnector:
             c.fill_preserve()
 
         c.stroke()
+        c.restore()
+
+
+class LineConnector(BaseConnector):
+    def __init__(self,
+                 color_rgba=(0.5, 0.5, 0.5, 0.5),
+                 line_width=1,
+                 dash=None,
+                 start_arrow: ArrowStyle | None = None,
+                 end_arrow: ArrowStyle | None = None):
+        self.color_rgba = color_rgba
+        self.line_width = line_width
+        self.dash = dash or []
+        self.start_arrow = start_arrow
+        self.end_arrow = end_arrow
+
+    def draw(self, c: Context, start_x: float, start_y: float, end_x: float, end_y: float):
+        c.save()
+        c.set_source_rgba(*self.color_rgba)
+        c.set_line_width(self.line_width)
+        c.set_dash(self.dash)
+
+        c.move_to(start_x, start_y)
+        c.line_to(end_x, end_y)
+        c.stroke()
+        if self.start_arrow:
+            self.draw_arrow(c, start_x, start_y, math.atan2(start_y - end_y, start_x - end_x), self.start_arrow)
+        if self.end_arrow:
+            self.draw_arrow(c, end_x, end_y, math.atan2(end_y - start_y, end_x - start_x), self.end_arrow)
 
         c.restore()
 
@@ -48,17 +77,17 @@ class ElbowConnector(BaseConnector):
     def __init__(self,
                  color_rgba=(0.5, 0.5, 0.5, 0.5),
                  line_width=1,
-                 orientation=ConnectorOrientation.HORIZONTAL,
                  dash=None,
                  start_arrow: ArrowStyle | None = None,
                  end_arrow: ArrowStyle | None = None,
+                 orientation=ConnectorOrientation.HORIZONTAL,
                  elbow_at=0.5):
         self.color_rgba = color_rgba
         self.line_width = line_width
-        self.orientation = orientation
+        self.dash = dash or []
         self.start_arrow = start_arrow
         self.end_arrow = end_arrow
-        self.dash = dash or []
+        self.orientation = orientation
         self.elbow_at = elbow_at
 
     def draw(self, c: Context, start_x: float, start_y: float, end_x: float, end_y: float):
