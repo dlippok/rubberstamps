@@ -9,7 +9,7 @@ authors = [
     { name = "Damian Lippok", email = "mail.dalee@gmail.com" },
 ]
 description = "A bunch of readily available shapes for Cairo graphics library."
-requires-python = ">=3.12"
+requires-python = ">=3.11"
 dependencies = [
     "pycairo"
 ]
