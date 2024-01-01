@@ -19,12 +19,12 @@ class ArrowStyle:
 
 
 class BaseConnector:
-    def draw_arrow(self,
-                   c: Context,
-                   x: float,
-                   y: float,
-                   orientation: float,
-                   style: ArrowStyle):
+    def _draw_arrow(self,
+                    c: Context,
+                    x: float,
+                    y: float,
+                    orientation: float,
+                    style: ArrowStyle):
         c.save()
         r = style.radius
         angle1 = pi - style.spread
@@ -45,19 +45,25 @@ class BaseConnector:
 
 class LineConnector(BaseConnector):
     def __init__(self,
+                 start: (float, float),
+                 end: (float, float),
                  color_rgba=(0.5, 0.5, 0.5, 0.5),
                  line_width=1,
                  dash=None,
                  start_arrow: ArrowStyle | None = None,
                  end_arrow: ArrowStyle | None = None):
+        self.start = start
+        self.end = end
         self.color_rgba = color_rgba
         self.line_width = line_width
         self.dash = dash or []
         self.start_arrow = start_arrow
         self.end_arrow = end_arrow
 
-    def draw(self, c: Context, start_x: float, start_y: float, end_x: float, end_y: float):
+    def draw(self, c: Context):
         c.save()
+        start_x, start_y = self.start
+        end_x, end_y = self.end
         c.set_source_rgba(*self.color_rgba)
         c.set_line_width(self.line_width)
         c.set_dash(self.dash)
@@ -66,15 +72,17 @@ class LineConnector(BaseConnector):
         c.line_to(end_x, end_y)
         c.stroke()
         if self.start_arrow:
-            self.draw_arrow(c, start_x, start_y, math.atan2(start_y - end_y, start_x - end_x), self.start_arrow)
+            self._draw_arrow(c, start_x, start_y, math.atan2(start_y - end_y, start_x - end_x), self.start_arrow)
         if self.end_arrow:
-            self.draw_arrow(c, end_x, end_y, math.atan2(end_y - start_y, end_x - start_x), self.end_arrow)
+            self._draw_arrow(c, end_x, end_y, math.atan2(end_y - start_y, end_x - start_x), self.end_arrow)
 
         c.restore()
 
 
 class ElbowConnector(BaseConnector):
     def __init__(self,
+                 start: (float, float),
+                 end: (float, float),
                  color_rgba=(0.5, 0.5, 0.5, 0.5),
                  line_width=1,
                  dash=None,
@@ -82,6 +90,8 @@ class ElbowConnector(BaseConnector):
                  end_arrow: ArrowStyle | None = None,
                  orientation=ConnectorOrientation.HORIZONTAL,
                  elbow_at=0.5):
+        self.start = start
+        self.end = end
         self.color_rgba = color_rgba
         self.line_width = line_width
         self.dash = dash or []
@@ -90,8 +100,10 @@ class ElbowConnector(BaseConnector):
         self.orientation = orientation
         self.elbow_at = elbow_at
 
-    def draw(self, c: Context, start_x: float, start_y: float, end_x: float, end_y: float):
+    def draw(self, c: Context):
         c.save()
+        start_x, start_y = self.start
+        end_x, end_y = self.end
         c.set_source_rgba(*self.color_rgba)
         c.set_line_width(self.line_width)
         c.set_dash(self.dash)
@@ -101,9 +113,9 @@ class ElbowConnector(BaseConnector):
             c.line_to(end_x, end_y)
             c.stroke()
             if self.start_arrow:
-                self.draw_arrow(c, start_x, start_y, math.atan2(start_y - end_y, start_x - end_x), self.start_arrow)
+                self._draw_arrow(c, start_x, start_y, math.atan2(start_y - end_y, start_x - end_x), self.start_arrow)
             if self.end_arrow:
-                self.draw_arrow(c, end_x, end_y, math.atan2(end_y - start_y, end_x - start_x), self.end_arrow)
+                self._draw_arrow(c, end_x, end_y, math.atan2(end_y - start_y, end_x - start_x), self.end_arrow)
 
         elif self.orientation == ConnectorOrientation.HORIZONTAL:
             elbow_x = start_x + ((end_x - start_x) * self.elbow_at)
@@ -112,9 +124,9 @@ class ElbowConnector(BaseConnector):
             c.line_to(end_x, end_y)
             c.stroke()
             if self.start_arrow:
-                self.draw_arrow(c, start_x, start_y, math.atan2(0, start_x - end_x), self.start_arrow)
+                self._draw_arrow(c, start_x, start_y, math.atan2(0, start_x - end_x), self.start_arrow)
             if self.end_arrow:
-                self.draw_arrow(c, end_x, end_y, math.atan2(0, end_x - start_x), self.end_arrow)
+                self._draw_arrow(c, end_x, end_y, math.atan2(0, end_x - start_x), self.end_arrow)
 
         else:
             elbow_y = start_y + ((end_y - start_y) * self.elbow_at)
@@ -124,8 +136,8 @@ class ElbowConnector(BaseConnector):
             c.stroke()
 
             if self.start_arrow:
-                self.draw_arrow(c, start_x, start_y, math.atan2(start_y - end_x, 0), self.start_arrow)
+                self._draw_arrow(c, start_x, start_y, math.atan2(start_y - end_x, 0), self.start_arrow)
             if self.end_arrow:
-                self.draw_arrow(c, end_x, end_y, math.atan2(end_y - start_y, 0), self.end_arrow)
+                self._draw_arrow(c, end_x, end_y, math.atan2(end_y - start_y, 0), self.end_arrow)
 
         c.restore()

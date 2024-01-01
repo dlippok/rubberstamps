@@ -6,16 +6,23 @@ from cairo import Context
 
 class Grid:
     def __init__(self,
+                 position: (float, float),
+                 size: (float, float),
                  color_rgba=(0.5, 0.5, 0.5, 0.5),
                  line_width: float = 1,
                  dash: List[float] | None = None,
                  spacing: float = 20):
+        self.position = position
+        self.size = size
         self.color_rgba = color_rgba
         self.line_width = line_width
         self.dash = dash or []
         self.spacing = spacing
 
-    def draw(self, c: Context, x: float, y: float, width: float, height: float):
+    def draw(self, c: Context):
+        x, y = self.position
+        width, height = self.size
+
         c.save()
         c.set_source_rgba(*self.color_rgba)
         c.set_line_width(self.line_width)
@@ -39,16 +46,22 @@ class Grid:
 
 class Lines:
     def __init__(self,
+                 position: (float, float),
+                 size: (float, float),
                  color_rgba=(0.5, 0.5, 0.5, 0.5),
                  line_width: float = 1,
                  dash: List[float] | None = None,
                  spacing: float = 20):
+        self.position = position
+        self.size = size
         self.color_rgba = color_rgba
         self.line_width = line_width
         self.dash = dash or []
         self.spacing = spacing
 
-    def draw(self, c: Context, x: float, y: float, width: float, height: float):
+    def draw(self, c: Context):
+        x, y = self.position
+        width, height = self.size
         c.save()
         c.set_source_rgba(*self.color_rgba)
         c.set_line_width(self.line_width)
@@ -65,16 +78,22 @@ class Lines:
 
 class HexagonalGrid:
     def __init__(self,
+                 position: (float, float),
+                 size: (float, float),
                  color_rgba=(0.5, 0.5, 0.5, 0.5),
                  line_width=1,
                  dash: List[float] | None = None,
                  radius=100):
+        self.position = position
+        self.size = size
         self.color_rgba = color_rgba
         self.line_width = line_width
         self.dash = dash or []
         self.radius = radius
 
-    def draw(self, c: Context, x: float, y: float, width: float, height: float):
+    def draw(self, c: Context):
+        x, y = self.position
+        width, height = self.size
         c.save()
         c.set_source_rgba(*self.color_rgba)
         c.set_line_width(self.line_width)
@@ -109,14 +128,20 @@ class HexagonalGrid:
 
 class CartesianCoordinates:
     def __init__(self,
+                 position: (float, float),
+                 size: (float, float),
                  color_rgba=(0.5, 0.5, 0.5, 0.5),
                  line_width: float = 1,
                  dash: List[float] | None = None):
+        self.position = position
+        self.size = size
         self.color_rgba = color_rgba
         self.line_width = line_width
         self.dash = dash or []
 
-    def draw(self, c: Context, x: float, y: float, width: float, height: float):
+    def draw(self, c: Context):
+        x, y = self.position
+        width, height = self.size
         c.save()
         c.set_source_rgba(*self.color_rgba)
         c.set_line_width(self.line_width)
@@ -133,41 +158,58 @@ class CartesianCoordinates:
 
 class PolarCoordinates:
     def __init__(self,
+                 position: (float, float),
+                 size: (float, float),
                  color_rgba=(0.5, 0.5, 0.5, 0.5),
                  line_width: float = 1,
                  spacing: float = 20,
                  dash: List[float] | None = None,
                  overflow: bool = False):
+        self.position = position
+        self.size = size
         self.cartesian = CartesianCoordinates(
+            position=posiition,
+            size=size,
             color_rgba=color_rgba,
             line_width=line_width,
             dash=dash)
         self.bullseye = Bullseye(
+            position=posiition,
+            size=size,
             color_rgba=color_rgba,
             line_width=line_width,
             dash=dash,
             spacing=spacing,
             overflow=overflow)
 
-    def draw(self, c: Context, x: float, y: float, width: float, height: float):
-        self.cartesian.draw(c, x, y, width, height)
-        self.bullseye.draw(c, x, y, width, height)
+    def draw(self, c: Context):
+        x, y = self.position
+        width, height = self.size
+        self.cartesian.draw(c)
+        self.bullseye.draw(c)
 
 
 class Bullseye:
     def __init__(self,
+                 position: (float, float),
+                 size: (float, float),
                  color_rgba=(0.5, 0.5, 0.5, 0.5),
                  line_width: float = 1,
                  dash: List[float] | None = None,
                  spacing: float = 20,
                  overflow: bool = False):
+        self.position = position
+        self.size = size
         self.color_rgba = color_rgba
         self.line_width = line_width
         self.dash = dash or []
         self.spacing = spacing
         self.overflow = overflow
 
-    def draw(self, c: Context, x: float, y: float, width: float, height: float):
+    def draw(self, c: Context):
+        x, y = self.position
+        width, height = self.size
+
         c.save()
         center = (width / 2 + x, height / 2 + y)
 
@@ -191,18 +233,28 @@ class Bullseye:
 
 
 class Dots:
-    def __init__(self, color_rgba=(0.5, 0.5, 0.5, 0.5), size: float = 1, spacing: float = 20):
-        self.color_rgba = color_rgba
+    def __init__(self,
+                 position: (float, float),
+                 size: (float, float),
+                 color_rgba=(0.5, 0.5, 0.5, 0.5),
+                 dot_size: float = 1,
+                 spacing: float = 20):
+        self.position = position
         self.size = size
+        self.color_rgba = color_rgba
+        self.dot_size = dot_size
         self.spacing = spacing
 
-    def draw(self, c: Context, x: float, y: float, width: float, height: float):
+    def draw(self, c: Context):
+        x, y = self.position
+        width, height = self.size
+
         c.save()
         c.set_source_rgba(*self.color_rgba)
-        c.set_dash([self.size, self.spacing - self.size])
-        c.set_line_width(self.size)
+        c.set_dash([self.dot_size, self.spacing - self.dot_size])
+        c.set_line_width(self.dot_size)
 
-        cur_y = y + (self.size / 2)
+        cur_y = y + (self.dot_size / 2)
         while cur_y < y + height:
             c.move_to(x, cur_y)
             c.line_to(x + width, cur_y)
