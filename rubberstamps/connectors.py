@@ -13,9 +13,9 @@ class ConnectorOrientation(Enum):
 
 @dataclasses.dataclass
 class ArrowStyle:
-    spread: float
-    filled: bool
-    radius: float
+    spread: float = 0.1 * pi
+    filled: bool = True
+    radius: float = 20
 
 
 class BaseConnector:
