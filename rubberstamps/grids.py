@@ -168,13 +168,13 @@ class PolarCoordinates:
         self.position = position
         self.size = size
         self.cartesian = CartesianCoordinates(
-            position=posiition,
+            position=position,
             size=size,
             color_rgba=color_rgba,
             line_width=line_width,
             dash=dash)
         self.bullseye = Bullseye(
-            position=posiition,
+            position=position,
             size=size,
             color_rgba=color_rgba,
             line_width=line_width,
